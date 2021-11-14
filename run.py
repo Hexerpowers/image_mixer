@@ -50,8 +50,8 @@ while True:
     buf_5 = np.concatenate((buf_4, buf_3), axis=1)
     end = time.time()
     frames += 1
-    fps = frames/(end-start)
-    if st_int<int(end):
-        service.print_log('Mixer', 0, 'Current FPS: '+str(int(fps)))
+    fps = frames / (end - start)
+    if st_int < int(end):
+        service.print_log('Mixer', 0, 'Current FPS: ' + str(int(fps)))
         st_int = int(end)
     writer.write(buf_5)
