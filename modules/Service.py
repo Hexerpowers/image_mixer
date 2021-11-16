@@ -15,6 +15,7 @@ class Service:
             print("\033[1m\033[34m{}".format(src) + "\033[1m\033[31m {}".format("::") +
                   "\033[1m\033[35m {}".format("CRITICAL") + "\033[1m\033[31m {}".format("::") +
                   "\033[1m\033[37m {}".format(message))
+            print()
         else:
             print("\033[1m\033[34m{}".format(src) + "\033[1m\033[31m {}".format("::") +
                   "\033[1m\033[37m {}".format("INFO") + "\033[1m\033[31m {}".format("::") +

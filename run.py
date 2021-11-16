@@ -51,7 +51,7 @@ while True:
     end = time.time()
     frames += 1
     fps = frames / (end - start)
+    writer.write(buf_5)
     if st_int < int(end):
         service.print_log('Mixer', 0, 'Current FPS: ' + str(int(fps)))
         st_int = int(end)
-    writer.write(buf_5)
