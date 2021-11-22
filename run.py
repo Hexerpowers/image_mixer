@@ -3,8 +3,8 @@ import time
 
 import numpy as np
 
+from modules.MjpegStreamReader import MjpegStreamReader
 from modules.StreamWriter import StreamWriter
-from modules.StreamReader import StreamReader
 from modules.Service import Service
 from modules.Source import Source
 
@@ -22,36 +22,34 @@ src_5 = Source(service, config['sources']['s_4'])
 src_6 = Source(service, config['sources']['s_5'])
 
 service.print_log('Mixer', 2, 'Connecting to sources...')
-reader_1 = StreamReader(service, src_1).start()
-reader_2 = StreamReader(service, src_2).start()
-reader_3 = StreamReader(service, src_3).start()
-reader_4 = StreamReader(service, src_4).start()
-reader_5 = StreamReader(service, src_5).start()
-reader_6 = StreamReader(service, src_6).start()
+reader_1 = MjpegStreamReader(service, src_1).start()
+reader_2 = MjpegStreamReader(service, src_2).start()
+reader_3 = MjpegStreamReader(service, src_3).start()
+reader_4 = MjpegStreamReader(service, src_4).start()
+reader_5 = MjpegStreamReader(service, src_5).start()
+reader_6 = MjpegStreamReader(service, src_6).start()
 writer = StreamWriter(service)
 time.sleep(2)
 service.print_log('Mixer', 2, 'Connected (or not)')
 start = time.time()
 st_int = int(start)
 frames = 0
+writer.start()
+
+
+def concat(frame_1, frame_2, frame_3, frame_4, frame_5, frame_6):
+    return np.vstack(
+        (np.hstack((np.hstack((frame_1, frame_2)), frame_3)), np.hstack((np.hstack((frame_4, frame_5)), frame_6))))
+
+
 while True:
-    frame_1 = reader_1.read()
-    frame_2 = reader_2.read()
-    frame_3 = reader_3.read()
-    frame_4 = reader_4.read()
-    frame_5 = reader_5.read()
-    frame_6 = reader_6.read()
 
-    buf_1 = np.concatenate((frame_1, frame_2), axis=0)
-    buf_2 = np.concatenate((frame_3, frame_4), axis=0)
-    buf_3 = np.concatenate((frame_5, frame_6), axis=0)
+    writer.write(
+        concat(reader_1.read(), reader_2.read(), reader_3.read(), reader_4.read(), reader_5.read(), reader_6.read()))
 
-    buf_4 = np.concatenate((buf_1, buf_2), axis=1)
-    buf_5 = np.concatenate((buf_4, buf_3), axis=1)
     end = time.time()
     frames += 1
     fps = frames / (end - start)
-    writer.write(buf_5)
     if st_int < int(end):
-        service.print_log('Mixer', 0, 'Current FPS: ' + str(int(fps)))
+        service.print_log('Mixer', 0, 'Current IPS: ' + str(int(fps)))
         st_int = int(end)
